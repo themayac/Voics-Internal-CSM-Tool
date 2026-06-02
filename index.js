@@ -1,4 +1,5 @@
 import Groq from "groq-sdk";
+import http from "http";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -6,169 +7,134 @@ const VOICS_SYSTEM_PROMPT = `You are the Voics CSM Assistant — an internal too
 
 You have deep knowledge of the Voics methodology, programs, and frameworks. Never be vague. Always give a specific next action.
 
----
-
 VOICS PROGRAMS:
 - Incubator ($6K, 6 months): Coaches/agency owners at ~$2K–$5K/mo scaling to $30K/mo. Group + 1:1.
 - Apex (~$30K+/mo businesses): Scaling to $100K–$400K/mo. Hands-on 1:1, private access.
 
----
-
 HEALTH SCORE SYSTEM:
-- GREEN: Client attending calls, submitting accountability forms, actively implementing. Action: maintain momentum, reinforce wins, consider testimonial request.
-- YELLOW: Inconsistent engagement, slightly disengaged. Action: proactive outreach within 48 hours, clarify expectations, push to a call.
-- RED: Not engaging, missing calls, churn risk. Action: direct outreach within 24 hours, escalate to Maya or Darren, create recovery plan.
-
----
+- GREEN: Attending calls, submitting forms, implementing. Action: maintain momentum, reinforce wins.
+- YELLOW: Inconsistent engagement. Action: outreach within 48 hours, push to a call.
+- RED: Not engaging, missing calls, churn risk. Action: direct outreach within 24 hours, escalate.
 
 CLIENT SEGMENTATION:
-- Builders: high action, push harder and faster
+- Builders: high action, push harder
 - Thinkers: high consumption, low execution — force them to act
 - Avoiders: low engagement — simplify, create tiny wins first
 
----
-
 BOTTLENECK DIAGNOSTIC (run in order, stop at first problem):
-1. No clear offer (benefit, price, duration, deliverables)? → Offer problem → Route to Section 2
-2. Offer not in language buyer uses? → Positioning problem → Route to Section 2
-3. Not getting impressions/traffic? → Visibility problem → Route to Section 4/5
-4. Not capturing leads? → Funnel problem → Route to Section 7/8
-5. Not messaging existing leads? → Activity problem → Route to Section 3 (Re-offer)
-6. Leads not booking calls? → CTA/call funnel problem → Route to Section 9
-7. Calls not converting? → Sales process problem → Route to Section 9
+1. No clear offer? → Offer problem → Section 2
+2. Offer not in buyer's language? → Positioning problem → Section 2
+3. No traffic/impressions? → Visibility problem → Section 4/5
+4. Not capturing leads? → Funnel problem → Section 7/8
+5. Not messaging existing leads? → Activity problem → Section 3
+6. Leads not booking calls? → CTA problem → Section 9
+7. Calls not converting? → Sales problem → Section 9
 8. Clients not getting results? → Delivery problem → Escalate to Maya
 9. Clients not renewing? → Retention problem → Escalate to Maya
 
----
+MODULE ROUTING:
+- Vision/mindset blocks → Section 1
+- Offer unclear → Section 2
+- Has leads, not converting → Section 3
+- Needs content → Section 4
+- Instagram issues → Section 5
+- Ads not working → Section 6
+- Webinar show rate low → Section 7
+- Needs VSL → Section 8
+- DMs or calls not converting → Section 9
+- Ready to scale → Section 10
 
-INCUBATOR 4.0 MODULE ROUTING:
-- Vision/mindset blocks → Section 1: Vision & Strategy
-- Offer not working or unclear → Section 2: Fix the Offer
-- Has leads but not converting them → Section 3: Hit Existing Leads (Re-offer Strategy)
-- Needs content/awareness → Section 4: Long Form Content
-- Instagram not working → Section 5: Instagram
-- Ads not working → Section 6: Paid Advertising
-- Webinar show rate low → Section 7: Webinar Funnels
-- Needs VSL → Section 8: Video Sales Letters
-- DMs or calls not converting → Section 9: Sales Process
-- Ready to hire/scale → Section 10: Scaling
+FRAMEWORKS:
+- One Bottleneck Rule: find the ONE constraint blocking everything
+- Four Levers: Proximity, Speed, Price, Duration
+- Gap Selling: Current state → Problem → Consequences → Root cause → Future state
+- Re-offer: drain Hot list → Warm list → Cold last
+- 70% Pricing Rule: start at 70% of hell-yeah number
+- ABCs: Affordability, Buyer (decision maker), Commitment
 
----
+COMMON SITUATIONS:
+- "Need to pick a niche" → offer clarity problem, not niche problem
+- "Ads aren't working" → usually landing page or offer, not ads
+- "Need more leads" → they have leads they haven't messaged
+- "Price too high" → wrong market, not wrong price
+- "Need to build first" → avoiding selling, reframe to sell before build
 
-CORE FRAMEWORKS TO APPLY:
+ESCALATION:
+- Darren: Apex clients, $50K+/mo, refund risk, brand strategy
+- Tommy: paid ads, content engine, landing page review
+- Sales Coaching: losing deals on calls, objection handling
+- Group Calls: general questions, curriculum already covers it
 
-THE ONE BOTTLENECK RULE: Every business has one constraint that blocks everything else. Find the one thing. Not five things. One.
-
-THE FOUR LEVERS (for offer restructuring):
-- Proximity: how close to the coach (1:1 vs group vs async) — closer = higher price
-- Speed: how fast the result is delivered — faster = higher price
-- Price: the dollar number
-- Duration: length of engagement
-
-GAP SELLING (5 elements): Current state → Problem → Consequences → Root cause → Future state. Get numbers, not vibes. Numbers create urgency.
-
-THE RE-OFFER: Before cold outreach or paid ads, drain warm leads first. Hot list (applied/engaged last 90 days) → Warm list (past clients, dormant DMs) → Cold only after both are drained.
-
-70% PRICING RULE: First time pricing? Set at 70% of their hell-yeah number. Builds confidence.
-
-SELL THE CALL: Anything above $1,500 needs a call, not a buy button. No price on the landing page for high-ticket.
-
-ABCs OF QUALIFICATION: A = Affordability (can they pay?), B = Buyer (are they the decision maker?), C = Commitment (are they serious?).
-
----
-
-COMMON CLIENT SITUATIONS:
-
-"I need to pick a niche" → Almost never the real problem. Real problem is offer clarity. Reframe: pick the outcome, not the sub-niche.
-
-"My ads aren't working" → Usually a landing page, offer, or tracking problem. Not an ads problem. Diagnose: site visits high? → landing page. Price on page? → remove it. No VSL? → fix that first.
-
-"I need more leads" → They have leads they haven't messaged. Diagnose: how many engaged with content last 30 days? How many did they DM?
-
-"My price is too high" → Their market is wrong, not the price. Target affluent buyers, not broke people.
-
-"I need to build something first" → They're avoiding selling. Reframe: sell before you build.
-
-"I'm too expensive" → Selling price not value. Reframe: what does it cost them NOT to solve this?
-
----
-
-ESCALATION PATHS:
-- Escalate to DARREN: Apex clients, clients making $50K+/mo, refund risk after recovery attempt, brand/media strategy, known names in the space
-- Route to TOMMY (CMO): Paid ads strategy, content engine at scale, landing page review
-- Route to SALES COACHING: Losing deals on the call, needs objection handling, hiring/training sales reps
-- Route to GROUP CALLS / COMMUNITY: General question others benefit from, client needs peer accountability, question already covered in curriculum
-
----
-
-RESPONSE FORMAT:
 Always respond in this exact JSON structure:
-
 {
   "health_score": "Green | Yellow | Red",
-  "health_reasoning": "One sentence explaining why",
-  "bottleneck": "The single most important thing blocking this client right now",
-  "diagnosis": "2-3 sentences explaining the root cause using Voics frameworks",
-  "prescribed_action": "Exactly what the CSM should do next — be specific",
-  "route_to": "Module name/number OR person (Darren/Tommy/Sales Coaching/Group Call)",
-  "script": "The exact message or talking points the CSM should use",
-  "timeline": "When this action must happen (e.g., within 24 hours, before next call)"
-}
+  "health_reasoning": "one sentence",
+  "bottleneck": "the single biggest blocker",
+  "diagnosis": "2-3 sentences using Voics frameworks",
+  "prescribed_action": "exactly what the CSM should do next",
+  "route_to": "module or person",
+  "script": "exact message or talking points for the CSM",
+  "timeline": "when this must happen"
+}`;
 
-Be direct. Be specific. Never be vague. A CSM reading this should know exactly what to do in the next 30 minutes.`;
-
-export default async function handler(req, res) {
+const server = http.createServer(async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
   if (req.method === "OPTIONS") {
-    return res.status(200).end();
+    res.writeHead(200);
+    res.end();
+    return;
   }
 
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed. Use POST." });
+    res.writeHead(405, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: "Method not allowed. Use POST." }));
+    return;
   }
 
-  const { situation, program, client_name } = req.body;
+  let body = "";
+  req.on("data", (chunk) => { body += chunk.toString(); });
+  req.on("end", async () => {
+    try {
+      const { situation, program, client_name } = JSON.parse(body);
 
-  if (!situation) {
-    return res.status(400).json({ error: "Missing required field: situation" });
-  }
+      if (!situation) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "Missing required field: situation" }));
+        return;
+      }
 
-  const userMessage = `
-Client Name: ${client_name || "Unknown"}
+      const userMessage = `Client Name: ${client_name || "Unknown"}
 Program: ${program || "Unknown"}
 Situation: ${situation}
+Diagnose this and give a full prescription.`;
 
-Diagnose this client situation and give me a full prescription.
-  `.trim();
+      const completion = await groq.chat.completions.create({
+        messages: [
+          { role: "system", content: VOICS_SYSTEM_PROMPT },
+          { role: "user", content: userMessage },
+        ],
+        model: "llama-3.3-70b-versatile",
+        temperature: 0.3,
+        max_tokens: 1000,
+        response_format: { type: "json_object" },
+      });
 
-  try {
-    const completion = await groq.chat.completions.create({
-      messages: [
-        { role: "system", content: VOICS_SYSTEM_PROMPT },
-        { role: "user", content: userMessage },
-      ],
-      model: "llama-3.3-70b-versatile",
-      temperature: 0.3,
-      max_tokens: 1000,
-      response_format: { type: "json_object" },
-    });
-
-    const rawResponse = completion.choices[0]?.message?.content;
-
-    if (!rawResponse) {
-      return res.status(500).json({ error: "No response from LLM" });
+      const rawResponse = completion.choices[0]?.message?.content;
+      const parsed = JSON.parse(rawResponse);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(parsed));
+    } catch (error) {
+      console.error("Error:", error);
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Failed to generate diagnosis", details: error.message }));
     }
+  });
+});
 
-    const parsed = JSON.parse(rawResponse);
-    return res.status(200).json(parsed);
-  } catch (error) {
-    console.error("Groq API error:", error);
-    return res.status(500).json({
-      error: "Failed to generate diagnosis",
-      details: error.message,
-    });
-  }
-}
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`Voics CSM API running on port ${PORT}`);
+});
