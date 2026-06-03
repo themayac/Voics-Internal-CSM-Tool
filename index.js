@@ -239,7 +239,7 @@ Always respond in this exact JSON structure:
   "diagnosis": "2-3 sentences explaining the root cause using Voics frameworks",
   "prescribed_action": "Exactly what the CSM should do next — be specific",
   "route_to": "Module name/number OR person (Darren/Tommy/Sales Coaching/Group Call)",
-  "script": "The exact message or talking points the CSM should use — ready to send",
+  "script": "The exact message the CSM should send — must end with a specific directive: either the exact module/section to go to (e.g. 'Go to Section 2 in your Incubator dashboard and complete the Bleeding Neck Offer exercise before our next call'), a specific task with a deadline, or a call booking link. Never end the script with just a question.",
   "timeline": "When this action must happen (e.g., within 24 hours, before next call)"
 }
 
