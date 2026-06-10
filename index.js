@@ -519,7 +519,7 @@ const server = http.createServer(async (req, res) => {
   req.on("data", (chunk) => { body += chunk.toString(); });
   req.on("end", async () => {
     try {
-      const { situation, program, client_name } = JSON.parse(body);
+      const { situation, program, client_name, csm_name } = JSON.parse(body);
 
       if (!situation) {
         res.writeHead(400, { "Content-Type": "application/json" });
@@ -529,6 +529,7 @@ const server = http.createServer(async (req, res) => {
 
       const userMessage = `Client Name: ${client_name || "Unknown"}
 Program: ${program || "Unknown"}
+CSM: ${csm_name || "Unknown"}
 Situation: ${situation}
 
 Diagnose this client situation and give a full prescription using the Voics frameworks.`;
