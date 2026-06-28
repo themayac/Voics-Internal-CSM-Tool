@@ -1,7 +1,13 @@
 import Groq from "groq-sdk";
 import http from "http";
+import { createClient } from "@supabase/supabase-js";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY
+);
 
 const VOICS_SYSTEM_PROMPT = `You are the Voics CSM Assistant — an internal tool for Voics Customer Success Managers. You think and respond exactly like a trained Voics coach. Your job is to diagnose client situations and give CSMs a clear, actionable prescription.
 
@@ -498,6 +504,85 @@ Always respond in this exact JSON structure:
 
 Be direct. Be specific. Reference the specific frameworks and playbooks that apply. A CSM reading this should know exactly what to do and exactly where to find the supporting material in the next 30 minutes.`;
 
+// --- Supabase helpers ---
+
+async function findOrCreateCsm(csmName) {
+  const name = (csmName || "Unknown").trim();
+
+  const { data: existing, error: findError } = await supabase
+    .from("csm_user")
+    .select("id")
+    .eq("name", name)
+    .maybeSingle();
+
+  if (findError) throw findError;
+  if (existing) return existing.id;
+
+  const { data: created, error: insertError } = await supabase
+    .from("csm_user")
+    .insert({ name, role: "CSM" })
+    .select("id")
+    .single();
+
+  if (insertError) throw insertError;
+  return created.id;
+}
+
+async function findOrCreateClient(clientName, program) {
+  const name = (clientName || "Unknown").trim();
+
+  const { data: existing, error: findError } = await supabase
+    .from("client")
+    .select("id")
+    .eq("name", name)
+    .maybeSingle();
+
+  if (findError) throw findError;
+  if (existing) return existing.id;
+
+  const { data: created, error: insertError } = await supabase
+    .from("client")
+    .insert({ name, program: program || "Unknown" })
+    .select("id")
+    .single();
+
+  if (insertError) throw insertError;
+  return created.id;
+}
+
+async function logQueryAndDiagnosis({ csmId, clientId, situation, diagnosis }) {
+  const { data: queryRow, error: queryError } = await supabase
+    .from("query")
+    .insert({
+      csm_id: csmId,
+      client_id: clientId,
+      query_text: situation,
+    })
+    .select("id")
+    .single();
+
+  if (queryError) throw queryError;
+
+  const { error: diagnosisError } = await supabase
+    .from("diagnosis_output")
+    .insert({
+      query_id: queryRow.id,
+      bottleneck: diagnosis.bottleneck,
+      diagnosis_text: diagnosis.diagnosis,
+      recommended_action: diagnosis.prescribed_action,
+      health_score: diagnosis.health_score,
+      health_reasoning: diagnosis.health_reasoning,
+      route_to: diagnosis.route_to,
+      playbook_reference: diagnosis.playbook_reference,
+      script: diagnosis.script,
+      timeline: diagnosis.timeline,
+    });
+
+  if (diagnosisError) throw diagnosisError;
+}
+
+// --- Server ---
+
 const server = http.createServer(async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -547,6 +632,22 @@ Diagnose this client situation and give a full prescription using the Voics fram
 
       const rawResponse = completion.choices[0]?.message?.content;
       const parsed = JSON.parse(rawResponse);
+
+      // --- Persist to Supabase (non-blocking for the CSM's response) ---
+      try {
+        const csmId = await findOrCreateCsm(csm_name);
+        const clientId = await findOrCreateClient(client_name, program);
+        await logQueryAndDiagnosis({
+          csmId,
+          clientId,
+          situation,
+          diagnosis: parsed,
+        });
+      } catch (persistError) {
+        // Log it, but never let a Supabase failure block the CSM from getting their diagnosis
+        console.error("Supabase logging failed:", persistError);
+      }
+
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify(parsed));
     } catch (error) {
